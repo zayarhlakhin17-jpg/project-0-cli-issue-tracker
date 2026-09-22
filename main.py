@@ -1,7 +1,7 @@
 import sys
 import argparse
 
-from tracker import add_issue, list_issues, search_issues
+from tracker import add_issue, list_issues, search_issues, close_issue, update_issue
 
 def main():
     parser = argparse.ArgumentParser(
@@ -10,7 +10,7 @@ def main():
 
     subparsers = parser.add_subparsers(
         dest="command",
-        required="True"
+        required=True
     )
 
     subparsers.add_parser("list")
@@ -20,6 +20,16 @@ def main():
 
     search_parser = subparsers.add_parser("search")
     search_parser.add_argument("query")
+
+    close_parser = subparsers.add_parser("close")
+    close_parser.add_argument("title")
+
+    update_parser = subparsers.add_parser("update")
+    update_parser.add_argument("old_title")
+    update_parser.add_argument("new_title")
+
+
+
 
     args = parser.parse_args()
 
@@ -45,6 +55,29 @@ def main():
             print("Title:", issue["title"])
             print("Status:", issue["status"])
             print("-----")
+
+    elif args.command == "close":
+        try:
+            issue = close_issue(args.title)
+            print("Closed:", issue)
+
+        except ValueError as error:
+            print("Error:", error)
+
+
+    elif args.command == "update":
+        try:
+            issue = update_issue(
+                args.old_title,
+                args.new_title
+            )
+
+            print("Updated:", issue)
+
+        except ValueError as error:
+            print("Error:", error)
+
+            
 
 if __name__ == "__main__":
     main()
